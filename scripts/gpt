@@ -1,0 +1,44 @@
+#!/bin/bash
+source ~/.env
+
+if [ -z "$1" ]; then
+  echo "Usage: gpt [-x] <question>"
+  exit 1
+fi
+
+execute_mode=false
+
+if [ "$1" = "-x" ]; then
+  execute_mode=true
+  shift  # Remove -x from the arguments
+fi
+
+API_URL="https://api.openai.com/v1/chat/completions"
+MODEL="gpt-3.5-turbo"
+
+prompt="Answer questions about $OS_DESCRIPTION in a short, concise manner."
+[ "$execute_mode" = true ] && prompt="Provide a command for $OS_DESCRIPTION for the following task, with no additional explanation. Only output the command."
+
+response=$(curl -s -X POST "$API_URL" \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer $OPENAI_API_KEY" \
+  -d '{
+        "model": "'"$MODEL"'",
+        "messages": [{"role": "system", "content": "'"$prompt"'"},
+                     {"role": "user", "content": "'"$*"'"}],
+        "max_tokens": 100
+      }')
+
+command=$(echo "$response" | jq -r '.choices[0].message.content')
+command=$(echo "$command" | sed -n '/^[a-zA-Z0-9]/p')
+
+echo "$command"
+
+if [ "$execute_mode" = true ]; then
+  read -p "Execute this command? (y/n): " confirm
+  if [ "$confirm" = "y" ]; then
+    eval "$command"
+  else
+    echo "Command not executed."
+  fi
+fi
