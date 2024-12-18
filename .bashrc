@@ -23,7 +23,7 @@ alias grep='grep --color=auto --exclude-dir=.git'
 alias please='sudo'
 alias gl="git log --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit"
 alias lr='ls -R | grep ":$" | sed -e '\''s/:$//'\'' -e '\''s/[^-][^\/]*\//--/g'\'' -e '\''s/^/   /'\'' -e '\''s/-/|/'\'''
-#alias quickfind='find -iname "*$1*"'
+alias quickfind='find -iname "*$1*"'
 alias ..='cd ..'
 alias ...='cd ../../'
 alias ....='cd ../../../'
